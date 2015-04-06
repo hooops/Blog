@@ -1,0 +1,64 @@
+{%  extends 'index.html'%}
+{% load comments %}
+
+{% block page-content %}
+<div class="contents">
+
+    <h3> {{blog_obj.title}} </h3>
+    作者:<h5>{{ username_.username }}</h5>
+    <br>
+   {{blog_obj.content|safe}}
+<br><hr>
+    {% if user.is_authenticated and user.username == username_.username %}
+</form><form method="post" action="/delete/" name=form2 >
+                <input type="hidden" value="{{ blog_obj.id}}" name="blog_id"/>
+                <a href="javascript:document:form2.submit();">删除</a>
+        </form><form method="post" action="/bianji/" name=form3 >
+                <input type="hidden" value="{{ blog_obj.id}}" name="blog_id"/>
+                <a href="javascript:document:form3.submit();">编辑</a></form>
+{%endif%}
+</div>
+
+<hr>
+<div class='comments'> 
+
+    <div >
+        {% get_comment_count for blog_obj as comment_count %}
+        <span class="glyphicon glyphicon-comment">
+        </span>
+         {{comment_count}}
+    </div>
+    <br>
+
+    
+    {% if user.is_authenticated%}
+        <form action="/sub_comment/" method="POST">
+           
+            <textarea cols=80 rows=3 name='comment_content'></textarea>
+            <input type="hidden" name="bbs_id" value="{{blog_obj.id}}" />
+            <input type="submit" value="评论" id="id_submit" />
+        </form>
+    {%else%}
+        <p>请 <a href='/login/'>登陆</a> 再评论!</p>
+    {%endif%}    
+
+    
+    
+    {% get_comment_list for blog_obj as comment_list %}
+     {% for comment in comment_list reversed %}
+            {{ comment.submit_date }}
+            <br>
+            {{ comment.comment }}
+<hr>
+         {% if user.is_authenticated and user.username == username_.username %}
+<form  action="/deletepin/" method="post" name=form{{comment.id  }} >
+                <input type="hidden" value="{{ comment.id}}" name="pin_id"/>
+                <a href="javascript:document:form{{comment.id  }}.submit();">删除</a>
+        </form><hr>{% endif %}
+     {% endfor %}
+
+</div> 
+{% endblock%}
+
+
+
